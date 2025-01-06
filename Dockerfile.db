@@ -1,0 +1,10 @@
+FROM postgres:13
+
+# Install required packages and pgvector extension
+RUN apt-get update && apt-get install -y postgresql-server-dev-13 gcc make git \
+    && git clone https://github.com/pgvector/pgvector.git /tmp/pgvector \
+    && cd /tmp/pgvector && make && make install \
+    && rm -rf /tmp/pgvector
+
+# Ensure the vector extension is available
+RUN echo "shared_preload_libraries = 'vector'" >> /usr/share/postgresql/postgresql.conf.sample
