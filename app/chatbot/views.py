@@ -14,7 +14,6 @@ import os
 
 os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY = config("OPENAI_API_KEY")
 
-# initialize vectorstore config
 connection_string = config("PGVECTOR_CONNECTION_STRING")
 db_name = config("PGVECTOR_DATABASE")
 conn = psycopg2.connect(connection_string)
@@ -28,7 +27,7 @@ vector_store = PGVectorStore.from_params(
     port=url.port,
     user=url.username,
     table_name="LLMFutureOfAI",
-    embed_dim=1536,  # openai embedding dimension
+    embed_dim=1536,
 )
 # create index
 index = VectorStoreIndex.from_vector_store(vector_store=vector_store)
