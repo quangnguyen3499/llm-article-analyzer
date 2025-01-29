@@ -5,21 +5,20 @@ from langchain_openai import ChatOpenAI
 from langchain.agents import initialize_agent
 from langchain.chains.conversation.memory import ConversationBufferWindowMemory
 from langchain.agents import Tool
-from sqlalchemy.engine import make_url
 from llama_index.core import VectorStoreIndex
 from llama_index.vector_stores.postgres import PGVectorStore
+from sqlalchemy.engine import make_url
 import psycopg2
 import os
 
 
-os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY = config("OPENAI_API_KEY")
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
 
-connection_string = config("PGVECTOR_CONNECTION_STRING")
-db_name = config("PGVECTOR_DATABASE")
+connection_string = os.getenv("DB_CONNECTION_STRING")
+db_name = config("DB_NAME", "")
 conn = psycopg2.connect(connection_string)
 conn.autocommit = True
 url = make_url(connection_string)
-
 vector_store = PGVectorStore.from_params(
     database=db_name,
     host=url.host,
@@ -29,7 +28,7 @@ vector_store = PGVectorStore.from_params(
     table_name="LLMFutureOfAI",
     embed_dim=1536,
 )
-# create index
+
 index = VectorStoreIndex.from_vector_store(vector_store=vector_store)
 query_engine = index.as_query_engine()
 
@@ -59,12 +58,13 @@ agent_executor = initialize_agent(
 )
 
 
-# Create RAG Pipeline
+# @traceable
 def ask_openai_rag(message):
     answer = agent_executor.run(input=message)
     return answer
 
 
+# @traceable
 def chatbot(request):
     if request.method == "POST":
         message = request.POST.get("message")

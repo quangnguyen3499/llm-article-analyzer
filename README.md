@@ -3,8 +3,7 @@
 ## Proof of Concept for a knowledge chatbot using Retrieval Augmented Generation (RAG) techniques.
 This is a proof of concept of using RAG techniques to add 3rd party information to an LLM. It is agentic, has memory, and a number of advanced & emerging RAG techniques were experimented on. A simple chat UI was built to facilitate the question and answering.
 
-# TODO: replace your own demo
-![Alt text](read_me_assets/demo.png)
+![Alt text](./static/demo/chat.png)
 
 ### Architecture
 **It is built using the following architecture**
@@ -15,13 +14,9 @@ This is a proof of concept of using RAG techniques to add 3rd party information 
 ### Features
 The agentic behavior of the RAG system **autonomously decides whether or not the 'LLM Future of AI Report' tool needs to be used** to answer the user's query. Here in the console log, you can see the LLM first considering whether or not it is appropriate to search the report to answer the user's query.
 
-# TODO: replace your own demo
-![Alt text](./read_me_assets/agentic_behavior.png)
-
 It also **holds memory of the previous conversation** so that it can keep track of conversation context. Here you can see that it remembers a user prompt from the previous conversation. It is currently given a rolling six messages (k=6) of additional memory context.
 
-# TODO: replace your own demo
-![Alt text](./read_me_assets/memory.png)
+![Alt text](./static/demo/memory.png)
 
 ### HOW TO RUN
 
