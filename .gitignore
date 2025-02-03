@@ -162,3 +162,6 @@ cython_debug/
 #custom
 archive
 app/docker-neo4j/db
+
+# MacOS
+.zshrc
