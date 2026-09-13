@@ -1,165 +1,104 @@
-{% extends 'base.html' %} {% block styles %}
+{% extends 'base.html' %}
+{% block title %}Career workspace{% endblock %}
+{% block styles %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
 <style>
-    body,
-    html {
-        height: 100%;
-    }
-
-    .messages-box {
-        flex: 1;
-        overflow-y: auto;
-    }
-
-    .messages-list {
-        padding-left: 0;
-    }
-
-    .message {
-        margin-bottom: 15px;
-        list-style: none;
-    }
-
-    .message-text {
-        padding: 10px;
-        border-radius: 5px;
-    }
-
-    .sent {
-        background-color: #dcf8c6;
-        align-self: flex-end;
-    }
-
-    .received {
-        background-color: #f1f0f0;
-        align-self: flex-start;
-    }
-
-    .message-form {
-        display: flex;
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        padding: 10px;
-        background-color: #f8f9fa;
-    }
-
-    .message-input {
-        flex: 1;
-        border-radius: 0;
-        border-right: none;
-    }
-
-    .btn-send {
-        border-radius: 0;
-    }
-
-    .chat-container {
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-    }
+    :root { --ink:#182230; --muted:#87909e; --line:#e9edf2; --blue:#5caae6; --blue-soft:#e9f6ff; --mint:#ccefe9; --lavender:#eee9ff; --pink:#fff0f0; }
+    * { box-sizing: border-box; }
+    html, body { min-height: 100%; }
+    body { margin: 0; color: var(--ink); background: #eef8ff; font-family: "DM Sans", sans-serif; }
+    button, input { font: inherit; } button { cursor: pointer; }
+    .workspace { display:grid; grid-template-columns:244px minmax(0,1fr); min-height:100vh; max-width:1500px; margin:0 auto; background:#fff; box-shadow:0 0 0 1px rgba(35,80,110,.05); }
+    .sidebar { display:flex; flex-direction:column; padding:28px 18px 22px; border-right:1px solid var(--line); background:#fff; }
+    .brand { display:flex; align-items:center; gap:10px; padding:0 12px 30px; color:var(--ink); font-family:"Space Grotesk",sans-serif; font-size:19px; font-weight:700; }
+    .brand-mark { display:grid; width:30px; height:30px; place-items:center; border-radius:9px; color:#fff; background:var(--blue); box-shadow:5px 5px 0 #d7f0ff; font-size:14px; }
+    .profile-chip { display:flex; align-items:center; gap:10px; margin:0 10px 28px; font-size:13px; font-weight:600; }
+    .avatar { display:grid; width:32px; height:32px; place-items:center; border-radius:50%; color:#755b46; background:#f6d9b8; font-size:12px; }
+    .sidebar-nav { display:grid; gap:5px; }
+    .nav-link { display:flex; align-items:center; gap:13px; padding:11px 13px; border-radius:12px; color:#737c88; font-size:13px; text-decoration:none; }
+    .nav-link:hover, .nav-link.active { color:var(--ink); background:#f4f6f8; } .nav-link.active { font-weight:600; } .nav-link i { width:16px; text-align:center; color:#a8b0b9; }
+    .sidebar-section { margin:30px 12px 9px; color:#b1b7bf; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; }
+    .recent-list { display:grid; gap:5px; padding:0 11px; } .recent-item { overflow:hidden; color:#555e68; font-size:12px; text-overflow:ellipsis; white-space:nowrap; }
+    .sidebar-spacer { flex:1; }
+    .usage-card { margin:20px 5px 22px; padding:15px; border-radius:14px; background:#f5f6f8; font-size:12px; } .usage-card strong { display:block; margin-bottom:5px; font-size:13px; }
+    .usage-bar { height:5px; margin:12px 0 8px; overflow:hidden; border-radius:4px; background:#e2e5e8; } .usage-bar span { display:block; width:35%; height:100%; border-radius:inherit; background:var(--blue); }
+    .sidebar-footer { display:flex; justify-content:space-between; padding:0 12px; color:#a2a9b2; font-size:12px; }
+    .main { position:relative; min-width:0; padding:45px clamp(25px,7vw,116px) 132px; overflow:hidden; background:linear-gradient(135deg,#fff 0%,#fff 68%,#f8fcff 100%); }
+    .main::before { position:absolute; right:-150px; top:-170px; width:470px; height:330px; border-radius:50%; background:#e9f7ff; content:""; opacity:.7; }
+    .main-content { position:relative; max-width:910px; margin:0 auto; }
+    .welcome { margin-bottom:34px; } .welcome h1 { margin:0 0 2px; font-family:"Space Grotesk",sans-serif; font-size:clamp(32px,4vw,48px); letter-spacing:-.02em; }
+    .welcome h1 span { padding:1px 11px 3px; border-radius:11px; color:#3d80b5; background:#daf1ff; } .welcome p { margin:0; color:#99a0a9; font-family:"Space Grotesk",sans-serif; font-size:clamp(28px,3.6vw,43px); line-height:1.1; }
+    .section-label { margin:0 0 12px; color:#a4acb6; font-size:12px; font-weight:600; }
+    .cards { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; margin-bottom:28px; }
+    .action-card { min-height:140px; padding:19px; border:1px solid var(--line); border-radius:16px; background:#fff; box-shadow:0 5px 17px rgba(26,51,71,.035); text-align:left; }
+    .action-card:hover { border-color:#c8e8fb; transform:translateY(-1px); transition:.2s ease; } .card-icon { display:grid; width:30px; height:30px; margin-bottom:16px; place-items:center; border-radius:9px; color:#4387b9; background:var(--blue-soft); }
+    .card-icon.mint { color:#3b9687; background:var(--mint); } .card-icon.lavender { color:#8169c0; background:var(--lavender); } .card-icon.pink { color:#d87575; background:var(--pink); }
+    .action-card h2 { margin:0 0 5px; font-size:16px; font-weight:600; } .action-card p { margin:0; color:#929aa4; font-size:12px; line-height:1.45; }
+    .documents { margin-bottom:30px; } .document-row { display:flex; align-items:center; gap:12px; padding:13px 16px; border:1px solid var(--line); border-radius:13px; background:#fff; }
+    .document-icon { display:grid; width:30px; height:30px; place-items:center; border-radius:8px; color:#e46c6c; background:#fff0f0; } .document-name { flex:1; min-width:0; overflow:hidden; font-size:13px; font-weight:600; text-overflow:ellipsis; white-space:nowrap; }
+    .document-meta { color:#a1a8b0; font-size:11px; } .empty-document { color:#a1a8b0; font-size:13px; }
+    .chat-panel { display:none; padding:18px; border:1px solid var(--line); border-radius:16px; background:#fff; } .chat-panel.visible { display:block; }
+    .messages-list { display:grid; gap:12px; max-height:330px; margin:0 0 15px; padding:0; overflow-y:auto; list-style:none; }
+    .message { display:flex; gap:9px; align-items:flex-start; } .message.sent { justify-content:flex-end; } .message-text { max-width:80%; padding:11px 13px; border-radius:13px; background:#f4f7f9; font-size:13px; line-height:1.55; white-space:pre-wrap; } .message.sent .message-text { background:var(--blue-soft); }
+    .message-sender { margin-bottom:5px; color:#8b949e; font-size:11px; font-weight:600; } .message-content { color:#424c57; }
+    .typing-bubble { display:flex; align-items:center; gap:5px; min-width:58px; padding:14px 16px; }
+    .typing-dot { width:6px; height:6px; border-radius:50%; background:#8fb8d5; animation:typing-bounce 1.1s infinite ease-in-out; }
+    .typing-dot:nth-child(2) { animation-delay:.15s; } .typing-dot:nth-child(3) { animation-delay:.3s; }
+    @keyframes typing-bounce { 0%, 60%, 100% { transform:translateY(0); opacity:.45; } 30% { transform:translateY(-5px); opacity:1; } }
+    .composer { position:fixed; right:clamp(25px,7vw,116px); bottom:27px; left:calc(244px + clamp(25px,7vw,116px)); z-index:5; max-width:910px; margin:0 auto; }
+    .composer-shell { display:flex; align-items:center; gap:10px; padding:8px 10px 8px 14px; border:1px solid #e1e6eb; border-radius:28px; background:rgba(255,255,255,.96); box-shadow:0 10px 28px rgba(31,58,79,.1); }
+    .upload-button { display:grid; width:31px; height:31px; flex:0 0 auto; place-items:center; border:0; border-radius:50%; color:#5caae6; background:#edf7ff; } .composer input[type=text] { min-width:0; flex:1; border:0; outline:0; color:var(--ink); font-size:13px; }
+    .composer input[type=text]::placeholder { color:#a4acb5; } .send-button { display:grid; width:34px; height:34px; place-items:center; border:0; border-radius:50%; color:#fff; background:#d5dbe0; } .send-button.ready { background:var(--blue); }
+    .upload-status { margin:8px 16px 0; color:#8f9aa4; font-size:11px; text-align:center; } .hidden-file { display:none; }
+    @media (max-width:800px) { .workspace { grid-template-columns:1fr; } .sidebar { display:none; } .main { min-height:100vh; padding:34px 18px 128px; } .composer { right:18px; left:18px; } .cards { grid-template-columns:1fr; } .welcome p { font-size:30px; } }
 </style>
-{% endblock %} {% block content %}
-<div class="chat-container">
-    <div class="card flex-grow-1">
-        <div class="card-header bg-success text-white">LLM Article Chatbot</div>
-        <div class="card-body messages-box">
-        <ul class="list-unstyled messages-list">
-            <li class="message received">
-            <div class="message-text">
-                <div class="message-sender">
-                <i class="fa fa-robot"></i>
-                <b>Bot</b>
-                </div>
-                <div class="message-content">
-                Hi, I am your a Chatbot, you can ask me anything about LLM's
-                Future of AI report.
-                </div>
-            </div>
-            </li>
-        </ul>
+{% endblock %}
+{% block content %}
+<div class="workspace">
+    <aside class="sidebar">
+        <div class="brand"><span class="brand-mark"><i class="fas fa-sparkles"></i></span> careerly</div>
+        <div class="profile-chip"><span class="avatar">ME</span><span>My career workspace</span><i class="fas fa-chevron-down ml-auto text-muted"></i></div>
+        <nav class="sidebar-nav" aria-label="Workspace navigation">
+            <a class="nav-link active" href="{% url 'chatbot' %}"><i class="fas fa-home"></i> Home</a>
+            <a class="nav-link" href="#assistant"><i class="far fa-comment-dots"></i> New chat</a>
+            <a class="nav-link" href="#tasks"><i class="far fa-check-square"></i> Job tasks</a>
+            <a class="nav-link" href="#documents"><i class="far fa-folder"></i> My documents</a>
+            <a class="nav-link" href="#assistant"><i class="fas fa-share-alt"></i> Shared with me</a>
+        </nav>
+        <div class="sidebar-section">Recent</div>
+        <div class="recent-list"><span class="recent-item">Resume and profile questions</span><span class="recent-item">Python interview preparation</span><span class="recent-item">Data role skill gaps</span></div>
+        <div class="sidebar-spacer"></div>
+        <div class="usage-card"><strong>Local AI workspace</strong><span>Powered by your Ollama model</span><div class="usage-bar"><span></span></div><small>Private on your machine</small></div>
+        <div class="sidebar-footer"><span>Settings</span><i class="fas fa-ellipsis-h"></i></div>
+    </aside>
+    <main class="main">
+        <div class="main-content">
+            <header class="welcome"><h1>Welcome to <span>your AI career coach</span> <span aria-hidden="true">👋</span></h1><p>How can I help you today?</p></header>
+            <section id="tasks" aria-labelledby="suggestions-label"><p class="section-label" id="suggestions-label">Suggested starting points</p><div class="cards">
+                <button class="action-card prompt-card" data-prompt="Review my resume and tell me which Python or data roles fit my experience."><span class="card-icon"><i class="fas fa-file-alt"></i></span><h2>Review my resume</h2><p>Find roles that match your current Python and data experience.</p></button>
+                <button class="action-card prompt-card" data-prompt="Create a focused plan to prepare for Python data engineering interviews."><span class="card-icon mint"><i class="fas fa-route"></i></span><h2>Plan my next role</h2><p>Build a practical learning and interview plan from your profile.</p></button>
+                <button class="action-card prompt-card" data-prompt="What are the biggest skill gaps I should close for my target data job?"><span class="card-icon lavender"><i class="fas fa-chart-line"></i></span><h2>Find skill gaps</h2><p>See the highest-value skills to learn next for your target job.</p></button>
+                <button class="action-card prompt-card" data-prompt="Give me five realistic Python and data interview questions based on my background."><span class="card-icon pink"><i class="fas fa-comments"></i></span><h2>Practice interviews</h2><p>Turn your own projects into clear, confident interview answers.</p></button>
+            </div></section>
+            <section class="documents" id="documents" aria-labelledby="documents-label"><p class="section-label" id="documents-label">Previously uploaded files</p><div class="document-row" id="document-row"><span class="document-icon"><i class="fas fa-file-pdf"></i></span><span class="empty-document">Upload your resume or a PDF to make it available to your career agent.</span></div></section>
+            <section class="chat-panel" id="assistant" aria-label="Career assistant conversation"><ul class="messages-list"></ul></section>
         </div>
-        <br /><br />
-        <br /><br />
-        <br /><br />
-    </div>
-    <form class="message-form">
-        {%csrf_token%}
-        <div class="input-group">
-        <input
-            type="text"
-            class="form-control message-input"
-            placeholder="Type your message..."
-        />
-        <div class="input-group-append">
-            <button type="submit" class="btn btn-primary btn-send">Send</button>
-        </div>
-        </div>
-    </form>
+        <div class="composer"><form class="message-form">{% csrf_token %}<div class="composer-shell"><label class="upload-button" for="profile-upload" title="Upload resume or PDF"><i class="fas fa-plus"></i></label><input id="profile-upload" class="hidden-file" type="file" name="profile" accept=".txt,.md,.pdf,.docx"><input type="text" class="message-input" placeholder="Ask or search for anything about your career..." autocomplete="off"><button class="send-button" type="submit" title="Send"><i class="fas fa-arrow-up"></i></button></div><div class="upload-status" aria-live="polite"></div></form></div>
+    </main>
 </div>
-
 <script>
-    const messagesList = document.querySelector(".messages-list");
-    const messageForm = document.querySelector(".message-form");
-    const messageInput = document.querySelector(".message-input");
-
-    // upon submission of send button...
-    messageForm.addEventListener("submit", (event) => {
-        event.preventDefault(); // prevent refresh of page on click
-
-        const message = messageInput.value.trim();
-        if (message.length === 0) {
-        return;
-        }
-
-        const messageItem = document.createElement("li");
-        messageItem.classList.add("message", "sent");
-        messageItem.innerHTML = `
-            <div class="message-text">
-            <div class="message-sender">
-                <b>You</b>
-            </div>
-            <div class="message-content">
-                ${message}
-            </div>
-            </div>`;
-        messagesList.appendChild(messageItem);
-
-        //clear from input box
-        messageInput.value = "";
-
-        //send data to backend
-        fetch("", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams({
-            csrfmiddlewaretoken: document.querySelector(
-            "[name=csrfmiddlewaretoken]"
-            ).value,
-            message: message,
-        }),
-        })
-        .then((response) => response.json())
-        .then((data) => {
-            const response = data.response;
-            const messageItem = document.createElement("li");
-            messageItem.classList.add("message", "received");
-            messageItem.innerHTML = `
-            <div class="message-text">
-                <div class="message-sender">
-                <i class="fas fa-robot"></i>
-                <b>Bot</b>
-                </div>
-                <div class="message-content">
-                    ${response}
-                </div>
-            </div>
-            `;
-            messagesList.appendChild(messageItem);
-        });
-    });
+    const csrfToken = document.querySelector("[name=csrfmiddlewaretoken]").value;
+    const messageForm = document.querySelector(".message-form"); const messageInput = document.querySelector(".message-input"); const sendButton = document.querySelector(".send-button"); const fileInput = document.querySelector(".hidden-file"); const uploadStatus = document.querySelector(".upload-status"); const documentRow = document.querySelector("#document-row"); const chatPanel = document.querySelector("#assistant"); const messagesList = document.querySelector(".messages-list");
+    function updateSendState() { sendButton.classList.toggle("ready", messageInput.value.trim().length > 0); }
+    function addMessage(text, sent) { chatPanel.classList.add("visible"); const item = document.createElement("li"); item.className = `message ${sent ? "sent" : "received"}`; const bubble = document.createElement("div"); bubble.className = "message-text"; const sender = document.createElement("div"); sender.className = "message-sender"; sender.textContent = sent ? "You" : "Career agent"; const content = document.createElement("div"); content.className = "message-content"; content.textContent = text; bubble.append(sender, content); item.appendChild(bubble); messagesList.appendChild(item); messagesList.scrollTop = messagesList.scrollHeight; }
+    function showTypingIndicator() { const item = document.createElement("li"); item.className = "message"; item.id = "typing-indicator"; const bubble = document.createElement("div"); bubble.className = "message-text typing-bubble"; bubble.setAttribute("aria-label", "Career agent is typing"); bubble.innerHTML = '<span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span>'; item.appendChild(bubble); messagesList.appendChild(item); messagesList.scrollTop = messagesList.scrollHeight; }
+    function hideTypingIndicator() { document.querySelector("#typing-indicator")?.remove(); }
+    messageInput.addEventListener("input", updateSendState);
+    document.querySelectorAll(".prompt-card").forEach((card) => card.addEventListener("click", () => { messageInput.value = card.dataset.prompt; updateSendState(); messageInput.focus(); }));
+    fileInput.addEventListener("change", async () => { if (!fileInput.files.length) return; const file = fileInput.files[0]; uploadStatus.textContent = `Reading ${file.name}...`; const formData = new FormData(); formData.append("profile", file); formData.append("csrfmiddlewaretoken", csrfToken); const response = await fetch("{% url 'upload_profile' %}", { method:"POST", body:formData }); const data = await response.json(); uploadStatus.textContent = data.message || data.error || "Upload failed."; uploadStatus.style.color = response.ok ? "#3d9687" : "#d87575"; if (response.ok) { documentRow.innerHTML = '<span class="document-icon"><i class="fas fa-file-pdf"></i></span><span class="document-name"></span><span class="document-meta"></span>'; documentRow.querySelector(".document-name").textContent = file.name; documentRow.querySelector(".document-meta").textContent = `${data.characters} characters extracted`; addMessage(`I loaded ${file.name}. Ask me anything about the experience, projects, or skills inside it.`, false); } });
+    messageForm.addEventListener("submit", async (event) => { event.preventDefault(); const message = messageInput.value.trim(); if (!message) return; addMessage(message, true); messageInput.value = ""; updateSendState(); sendButton.disabled = true; showTypingIndicator(); try { const response = await fetch("{% url 'chatbot' %}", { method:"POST", headers:{"Content-Type":"application/x-www-form-urlencoded"}, body:new URLSearchParams({csrfmiddlewaretoken:csrfToken,message}) }); const data = await response.json(); hideTypingIndicator(); addMessage(data.response || data.error || "The agent could not answer right now.", false); } catch (error) { hideTypingIndicator(); addMessage("I could not reach the career agent. Please try again.", false); } finally { sendButton.disabled = false; } });
 </script>
-
 {% endblock %}

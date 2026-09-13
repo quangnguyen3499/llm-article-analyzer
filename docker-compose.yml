@@ -2,7 +2,7 @@ version: '3.9'
 
 services:
   app:
-    image: python:3.9
+    image: python:3.10
     container_name: llm_article_analyzer
     build:
       context: .
@@ -13,6 +13,8 @@ services:
       - "8000:8000"
     depends_on:
       - db
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     env_file:
       - ./.env
 
@@ -23,7 +25,9 @@ services:
     container_name: postgres_db
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./vectordb_init.sql:/docker-entrypoint-initdb.d/vectordb_init.sql
+    # Publish Postgres to the host so tools on this machine can connect.
+    # Be cautious: this allows host processes to reach the DB. If you want
+    # to prevent unwanted clients, switch back to `expose` or restrict access.
     ports:
       - "5432:5432"
     env_file:
@@ -31,7 +35,7 @@ services:
     environment:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_DB: llm_article_analyzer
+      POSTGRES_DB: ${DB_NAME}
 
 volumes:
   postgres_data:
